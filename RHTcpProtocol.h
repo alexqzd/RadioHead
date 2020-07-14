@@ -46,7 +46,7 @@ typedef struct
 {
     uint32_t        length; ///< Number of octets following, in network byte order
     uint8_t         type;   ///< == RH_TCP_MESSAGE_TYPE_THISADDRESS
-    uint8_t         thisAddress; ///< Node address
+    uint32_t         thisAddress; ///< Node address
 }   RHTcpThisAddress;
 
 /// \brief RH_TCP radio message passed to or from the simulator
@@ -54,8 +54,8 @@ typedef struct
 {
     uint32_t        length; ///< Number of octets following, in network byte order
     uint8_t         type;   ///< == RH_TCP_MESSAGE_TYPE_PACKET
-    uint8_t         to;     ///< Node address of the recipient
-    uint8_t         from;   ///< Node address of the sender
+    uint32_t         to;     ///< Node address of the recipient
+    uint32_t         from;   ///< Node address of the sender
     uint8_t         id;     ///< Message sequence number
     uint8_t         flags;  ///< Message flags
     uint8_t         payload[RH_TCP_MAX_MESSAGE_LEN]; ///< 0 or more, length deduced from length above

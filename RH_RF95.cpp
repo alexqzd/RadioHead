@@ -287,7 +287,7 @@ void RH_RF95::clearRxBuf()
     ATOMIC_BLOCK_END;
 }
 
-bool RH_RF95::recv(uint8_t* buf, uint8_t* len)
+bool RH_RF95::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

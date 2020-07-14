@@ -496,7 +496,7 @@ bool RH_ASK::available()
     return _rxBufValid;
 }
 
-bool RH_INTERRUPT_ATTR RH_ASK::recv(uint8_t* buf, uint8_t* len)
+bool RH_INTERRUPT_ATTR RH_ASK::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

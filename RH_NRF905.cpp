@@ -249,7 +249,7 @@ void RH_NRF905::clearRxBuf()
     _bufLen = 0;
 }
 
-bool RH_NRF905::recv(uint8_t* buf, uint8_t* len)
+bool RH_NRF905::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

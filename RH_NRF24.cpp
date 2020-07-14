@@ -328,7 +328,7 @@ void RH_NRF24::clearRxBuf()
     _bufLen = 0;
 }
 
-bool RH_NRF24::recv(uint8_t* buf, uint8_t* len)
+bool RH_NRF24::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

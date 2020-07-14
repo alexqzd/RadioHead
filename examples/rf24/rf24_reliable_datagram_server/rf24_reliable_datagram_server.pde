@@ -42,7 +42,7 @@ void loop()
   {
     // Wait for a message addressed to us from the client
     uint8_t len = sizeof(buf);
-    uint8_t from;
+    uint32_t from;
     if (manager.recvfromAck(buf, &len, &from))
     {
       Serial.print("got request from : 0x");

@@ -5,7 +5,7 @@
 
 #include <RHDatagram.h>
 
-RHDatagram::RHDatagram(RHGenericDriver& driver, uint8_t thisAddress) 
+RHDatagram::RHDatagram(RHGenericDriver& driver, uint32_t thisAddress) 
     :
     _driver(driver),
     _thisAddress(thisAddress)
@@ -22,7 +22,7 @@ bool RHDatagram::init()
     return ret;
 }
 
-void RHDatagram::setThisAddress(uint8_t thisAddress)
+void RHDatagram::setThisAddress(uint32_t thisAddress)
 {
     _driver.setThisAddress(thisAddress);
     // Use this address in the transmitted FROM header
@@ -30,13 +30,13 @@ void RHDatagram::setThisAddress(uint8_t thisAddress)
     _thisAddress = thisAddress;
 }
 
-bool RHDatagram::sendto(uint8_t* buf, uint8_t len, uint8_t address)
+bool RHDatagram::sendto(uint8_t* buf, uint8_t len, uint32_t address)
 {
     setHeaderTo(address);
     return _driver.send(buf, len);
 }
 
-bool RHDatagram::recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHDatagram::recvfrom(uint8_t* buf, uint16_t* len, uint32_t* from, uint32_t* to, uint8_t* id, uint8_t* flags)
 {
     if (_driver.recv(buf, len))
     {
@@ -74,17 +74,17 @@ bool RHDatagram::waitAvailableTimeout(uint16_t timeout)
     return _driver.waitAvailableTimeout(timeout);
 }
 
-uint8_t RHDatagram::thisAddress()
+uint32_t RHDatagram::thisAddress()
 {
     return _thisAddress;
 }
 
-void RHDatagram::setHeaderTo(uint8_t to)
+void RHDatagram::setHeaderTo(uint32_t to)
 {
     _driver.setHeaderTo(to);
 }
 
-void RHDatagram::setHeaderFrom(uint8_t from)
+void RHDatagram::setHeaderFrom(uint32_t from)
 {
     _driver.setHeaderFrom(from);
 }
@@ -99,12 +99,12 @@ void RHDatagram::setHeaderFlags(uint8_t set, uint8_t clear)
     _driver.setHeaderFlags(set, clear);
 }
 
-uint8_t RHDatagram::headerTo()
+uint32_t RHDatagram::headerTo()
 {
     return _driver.headerTo();
 }
 
-uint8_t RHDatagram::headerFrom()
+uint32_t RHDatagram::headerFrom()
 {
     return _driver.headerFrom();
 }

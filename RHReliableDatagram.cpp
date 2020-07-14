@@ -15,14 +15,13 @@
 
 ////////////////////////////////////////////////////////////////////
 // Constructors
-RHReliableDatagram::RHReliableDatagram(RHGenericDriver& driver, uint8_t thisAddress) 
+RHReliableDatagram::RHReliableDatagram(RHGenericDriver& driver, uint32_t thisAddress) 
     : RHDatagram(driver, thisAddress)
 {
     _retransmissions = 0;
     _lastSequenceNumber = 0;
     _timeout = RH_DEFAULT_TIMEOUT;
     _retries = RH_DEFAULT_RETRIES;
-    memset(_seenIds, 0, sizeof(_seenIds));
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -45,7 +44,7 @@ uint8_t RHReliableDatagram::retries()
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
+bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint32_t address)
 {
     // Assemble the message
     uint8_t thisSequenceNumber = ++_lastSequenceNumber;
@@ -93,7 +92,8 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 	{
 	    if (waitAvailableTimeout(timeLeft))
 	    {
-		uint8_t from, to, id, flags;
+		uint32_t from, to;
+		uint8_t id, flags;
 		if (recvfrom(0, 0, &from, &to, &id, &flags)) // Discards the message
 		{
 		    // Now have a message: is it our ACK?
@@ -106,7 +106,7 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 			return true;
 		    }
 		    else if (   !(flags & RH_FLAGS_ACK)
-				&& (id == _seenIds[from]))
+				&& (_seenIdsforAddress.count(from) && id == _seenIdsforAddress[from]))
 		    {
 			// This is a request we have already received. ACK it again
 			acknowledge(id, from);
@@ -125,10 +125,10 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint16_t* len, uint32_t* from, uint32_t* to, uint8_t* id, uint8_t* flags)
 {  
-    uint8_t _from;
-    uint8_t _to;
+    uint32_t _from;
+    uint32_t _to;
     uint8_t _id;
     uint8_t _flags;
     // Get the message before its clobbered by the ACK (shared rx and tx buffer in some drivers
@@ -151,13 +151,13 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
             // shuts down between transmissions. Devices that do this will report the
             // the same ID each time since their internal sequence number will reset
             // to zero each time the device starts up.
-	    if ((RH_ENABLE_EXPLICIT_RETRY_DEDUP && !(_flags & RH_FLAGS_RETRY)) || _id != _seenIds[_from])
+	    if ((RH_ENABLE_EXPLICIT_RETRY_DEDUP && !(_flags & RH_FLAGS_RETRY)) || !(_seenIdsforAddress.count(_from) && _id == _seenIdsforAddress[_from]))
 	    {
 		if (from)  *from =  _from;
 		if (to)    *to =    _to;
 		if (id)    *id =    _id;
 		if (flags) *flags = _flags;
-		_seenIds[_from] = _id;
+		_seenIdsforAddress[_from] = _id;
 		return true;
 	    }
 	    // Else just re-ack it and wait for a new one
@@ -167,7 +167,7 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
     return false;
 }
 
-bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint16_t* len, uint16_t timeout, uint32_t* from, uint32_t* to, uint8_t* id, uint8_t* flags)
 {
     unsigned long starttime = millis();
     int32_t timeLeft;
@@ -193,7 +193,7 @@ void RHReliableDatagram::resetRetransmissions()
     _retransmissions = 0;
 }
  
-void RHReliableDatagram::acknowledge(uint8_t id, uint8_t from)
+void RHReliableDatagram::acknowledge(uint8_t id, uint32_t from)
 {
     setHeaderId(id);
     setHeaderFlags(RH_FLAGS_ACK);

@@ -616,7 +616,7 @@ bool RH_RF22::waitPacketSent()
 }
 #endif
 
-bool RH_RF22::recv(uint8_t* buf, uint8_t* len)
+bool RH_RF22::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;
@@ -783,7 +783,7 @@ uint8_t RH_RF22::maxMessageLength()
     return RH_RF22_MAX_MESSAGE_LEN;
 }
 
-void RH_RF22::setThisAddress(uint8_t thisAddress)
+void RH_RF22::setThisAddress(uint32_t thisAddress)
 {
     RHSPIDriver::setThisAddress(thisAddress);
     spiWrite(RH_RF22_REG_3F_CHECK_HEADER3, thisAddress);

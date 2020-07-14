@@ -53,7 +53,7 @@ void loop()
     // It has been reliably delivered to the next node.
     // Now wait for a reply from the ultimate server
     uint8_t len = sizeof(buf);
-    uint8_t from;    
+    uint32_t from;    
     if (manager.recvfromAckTimeout(buf, &len, 3000, &from))
     {
       Serial.print("got reply from : 0x");

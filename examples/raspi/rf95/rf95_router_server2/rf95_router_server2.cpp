@@ -111,7 +111,7 @@ int main (int argc, const char* argv[] )
   while(!flag)
   {
   	uint8_t len = sizeof(buf);
-  	uint8_t from;
+  	uint32_t from;
   	if (manager.recvfromAck(buf, &len, &from))
   	{
 #ifdef RFM95_LED

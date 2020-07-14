@@ -33,7 +33,7 @@
 
 // The length of the headers we add.
 // The headers are inside the RF69's payload and are therefore encrypted if encryption is enabled
-#define RH_RF69_HEADER_LEN 4
+#define RH_RF69_HEADER_LEN 10
 
 // This is the maximum message length that can be supported by this driver. Limited by
 // the size of the FIFO, since we are unable to support on-the-fly filling and emptying 
@@ -908,7 +908,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    bool        recv(uint8_t* buf, uint8_t* len);
+    bool        recv(uint8_t* buf, uint16_t* len);
 
     /// Waits until any previous transmit packet is finished being transmitted with waitPacketSent().
     /// Then loads a message into the transmitter and starts the transmitter. Note that a message length

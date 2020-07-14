@@ -133,25 +133,25 @@ public:
     } MeshApplicationMessage;
 
     /// Signals a route discovery request or reply (At present only supports physical dest addresses of length 1 octet)
-    typedef struct
+    typedef struct __attribute__((__packed__))
     {
 	MeshMessageHeader   header;  ///< msgType = RH_MESH_MESSAGE_TYPE_ROUTE_DISCOVERY_*
 	uint8_t             destlen; ///< Reserved. Must be 1
-	uint8_t             dest;    ///< The address of the destination node whose route is being sought
-	uint8_t             route[RH_MESH_MAX_MESSAGE_LEN - 2]; ///< List of node addresses visited so far. Length is implcit
+	uint32_t dest;    ///< The address of the destination node whose route is being sought
+	uint32_t             route[ (uint8_t)((RH_MESH_MAX_MESSAGE_LEN - 5)/4) ]; ///< List of node addresses visited so far. Length is implcit
     } MeshRouteDiscoveryMessage;
 
     /// Signals a route failure
     typedef struct
     {
 	MeshMessageHeader   header; ///< msgType = RH_MESH_MESSAGE_TYPE_ROUTE_FAILURE
-	uint8_t             dest; ///< The address of the destination towards which the route failed
+	uint32_t dest; ///< The address of the destination towards which the route failed
     } MeshRouteFailureMessage;
 
     /// Constructor. 
     /// \param[in] driver The RadioHead driver to use to transport messages.
     /// \param[in] thisAddress The address to assign to this node. Defaults to 0
-    RHMesh(RHGenericDriver& driver, uint8_t thisAddress = 0);
+    RHMesh(RHGenericDriver& driver, uint32_t thisAddress = 0);
 
     /// Sends a message to the destination node. Initialises the RHRouter message header 
     /// (the SOURCE address is set to the address of this node, HOPS to 0) and calls 
@@ -172,7 +172,7 @@ public:
     ///         - RH_ROUTER_ERROR_NO_ROUTE There was no route for dest in the local routing table
     ///         - RH_ROUTER_ERROR_UNABLE_TO_DELIVER Not able to deliver to the next hop 
     ///           (usually because it dod not acknowledge due to being off the air or out of range
-    uint8_t sendtoWait(uint8_t* buf, uint8_t len, uint8_t dest, uint8_t flags = 0);
+    uint8_t sendtoWait(uint8_t* buf, uint8_t len, uint32_t dest, uint8_t flags = 0);
 
     /// Starts the receiver if it is not running already, processes and possibly routes any received messages
     /// addressed to other nodes
@@ -196,7 +196,7 @@ public:
     /// \param[in] flags If present and not NULL, the referenced uint8_t will be set to the FLAGS
     /// (not just those addressed to this node).
     /// \return true if a valid message was received for this node and copied to buf
-    bool recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* source = NULL, uint8_t* dest = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
+    bool recvfromAck(uint8_t* buf, uint16_t* len, uint32_t* source = NULL, uint32_t* dest = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
 
     /// Starts the receiver if it is not running already.
     /// Similar to recvfromAck(), this will block until either a valid application layer 
@@ -211,7 +211,7 @@ public:
     /// \param[in] flags If present and not NULL, the referenced uint8_t will be set to the FLAGS
     /// (not just those addressed to this node).
     /// \return true if a valid message was copied to buf
-    bool recvfromAckTimeout(uint8_t* buf, uint8_t* len,  uint16_t timeout, uint8_t* source = NULL, uint8_t* dest = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
+    bool recvfromAckTimeout(uint8_t* buf, uint16_t* len,  uint16_t timeout, uint32_t* source = NULL, uint32_t* dest = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
 
 protected:
 
@@ -219,21 +219,21 @@ protected:
     /// Called by recvfromAck() immediately after it gets the message from RHReliableDatagram
     /// \param [in] message Pointer to the RHRouter message that was received.
     /// \param [in] messageLen Length of message in octets
-    virtual void peekAtMessage(RoutedMessage* message, uint8_t messageLen);
+    virtual void peekAtMessage(RoutedMessage* message, uint16_t messageLen);
 
     /// Internal function that inspects messages being received and adjusts the routing table if necessary.
     /// This is virtual, which lets subclasses override or intercept the route() function.
     /// Called by sendtoWait after the message header has been filled in.
     /// \param [in] message Pointer to the RHRouter message to be sent.
     /// \param [in] messageLen Length of message in octets
-    virtual uint8_t route(RoutedMessage* message, uint8_t messageLen);
+    virtual uint8_t route(RoutedMessage* message, uint16_t messageLen);
 
     /// Try to resolve a route for the given address. Blocks while discovering the route
     /// which may take up to 4000 msec.
     /// Virtual so subclasses can override.
     /// \param [in] address The physical address to resolve
     /// \return true if the address was resolved and added to the local routing table
-    virtual bool doArp(uint8_t address);
+    virtual bool doArp(uint32_t address);
 
     /// Tests if the given address of length addresslen is indentical to the
     /// physical address of this node.

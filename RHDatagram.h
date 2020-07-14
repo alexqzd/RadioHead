@@ -48,7 +48,7 @@ public:
     /// Constructor. 
     /// \param[in] driver The RadioHead driver to use to transport messages.
     /// \param[in] thisAddress The address to assign to this node. Defaults to 0
-    RHDatagram(RHGenericDriver& driver, uint8_t thisAddress = 0);
+    RHDatagram(RHGenericDriver& driver, uint32_t thisAddress = 0);
 
     /// Initialise this instance and the 
     /// driver connected to it.
@@ -59,7 +59,7 @@ public:
     /// In a conventional multinode system, all nodes will have a unique address 
     /// (which you could store in EEPROM).
     /// \param[in] thisAddress The address of this node
-    void setThisAddress(uint8_t thisAddress);
+    void setThisAddress(uint32_t thisAddress);
 
     /// Sends a message to the node(s) with the given address
     /// RH_BROADCAST_ADDRESS is a valid address which will cause the message
@@ -68,7 +68,7 @@ public:
     /// \param[in] len Number of octets to send (> 0)
     /// \param[in] address The address to send the message to.
     /// \return true if the message not too loing fot eh driver, and the message was transmitted.
-    bool sendto(uint8_t* buf, uint8_t len, uint8_t address);
+    bool sendto(uint8_t* buf, uint8_t len, uint32_t address);
 
     /// Turns the receiver on if it not already on.
     /// If there is a valid message available for this node, copy it to buf and return true
@@ -85,7 +85,7 @@ public:
     /// \param[in] flags If present and not NULL, the referenced uint8_t will be set to the FLAGS
     /// (not just those addressed to this node).
     /// \return true if a valid message was copied to buf
-    bool recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from = NULL, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
+    bool recvfrom(uint8_t* buf, uint16_t* len, uint32_t* from = NULL, uint32_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
 
     /// Tests whether a new message is available
     /// from the Driver.
@@ -116,11 +116,11 @@ public:
 
     /// Sets the TO header to be sent in all subsequent messages
     /// \param[in] to The new TO header value
-    void           setHeaderTo(uint8_t to);
+    void           setHeaderTo(uint32_t to);
 
     /// Sets the FROM header to be sent in all subsequent messages
     /// \param[in] from The new FROM header value
-    void           setHeaderFrom(uint8_t from);
+    void           setHeaderFrom(uint32_t from);
 
     /// Sets the ID header to be sent in all subsequent messages
     /// \param[in] id The new ID header value
@@ -133,11 +133,11 @@ public:
 
     /// Returns the TO header of the last received message
     /// \return The TO header of the most recently received message.
-    uint8_t        headerTo();
+    uint32_t        headerTo();
 
     /// Returns the FROM header of the last received message
     /// \return The FROM header of the most recently received message.
-    uint8_t        headerFrom();
+    uint32_t        headerFrom();
 
     /// Returns the ID header of the last received message
     /// \return The ID header of the most recently received message.
@@ -149,14 +149,14 @@ public:
 
     /// Returns the address of this node.
     /// \return The address of this node
-    uint8_t         thisAddress();
+    uint32_t         thisAddress();
 
 protected:
     /// The Driver we are to use
     RHGenericDriver&        _driver;
 
     /// The address of this node
-    uint8_t         _thisAddress;
+    uint32_t         _thisAddress;
 };
 
 #endif

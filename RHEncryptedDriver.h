@@ -72,7 +72,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    virtual bool recv(uint8_t* buf, uint8_t* len);
+    virtual bool recv(uint8_t* buf, uint16_t* len);
 
     /// Waits until any previous transmit packet is finished being transmitted with waitPacketSent().
     /// Then optionally waits for Channel Activity Detection (CAD) 
@@ -133,15 +133,15 @@ public:
     /// You would normally set the header FROM address to be the same as thisAddress (though you dont have to, 
     /// allowing the possibilty of address spoofing).
     /// \param[in] thisAddress The address of this node.
-    virtual void setThisAddress(uint8_t thisAddress) { _driver.setThisAddress(thisAddress);};
+    virtual void setThisAddress(uint32_t thisAddress) { _driver.setThisAddress(thisAddress);};
 
     /// Sets the TO header to be sent in all subsequent messages
     /// \param[in] to The new TO header value
-    virtual void           setHeaderTo(uint8_t to){ _driver.setHeaderTo(to);};
+    virtual void           setHeaderTo(uint32_t to){ _driver.setHeaderTo(to);};
 
     /// Sets the FROM header to be sent in all subsequent messages
     /// \param[in] from The new FROM header value
-    virtual void           setHeaderFrom(uint8_t from){ _driver.setHeaderFrom(from);};
+    virtual void           setHeaderFrom(uint32_t from){ _driver.setHeaderFrom(from);};
 
     /// Sets the ID header to be sent in all subsequent messages
     /// \param[in] id The new ID header value
@@ -163,11 +163,11 @@ public:
 
     /// Returns the TO header of the last received message
     /// \return The TO header
-    virtual uint8_t        headerTo() { return _driver.headerTo();};
+    virtual uint32_t        headerTo() { return _driver.headerTo();};
 
     /// Returns the FROM header of the last received message
     /// \return The FROM header
-    virtual uint8_t        headerFrom() { return _driver.headerFrom();};
+    virtual uint32_t        headerFrom() { return _driver.headerFrom();};
 
     /// Returns the ID header of the last received message
     /// \return The ID header

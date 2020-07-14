@@ -14,7 +14,7 @@ RHEncryptedDriver::RHEncryptedDriver(RHGenericDriver& driver, BlockCipher& block
     _buffer = (uint8_t *)calloc(_driver.maxMessageLength(), sizeof(uint8_t));
 }
 
-bool RHEncryptedDriver::recv(uint8_t* buf, uint8_t* len)
+bool RHEncryptedDriver::recv(uint8_t* buf, uint16_t* len)
 {
     int h = 0; // Index of output _buffer
 

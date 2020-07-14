@@ -43,7 +43,7 @@ uint8_t buf[RH_ROUTER_MAX_MESSAGE_LEN];
 void loop()
 {
   uint8_t len = sizeof(buf);
-  uint8_t from;
+  uint32_t from;
   if (manager.recvfromAck(buf, &len, &from))
   {
     Serial.print("got request from : 0x");

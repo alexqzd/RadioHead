@@ -369,7 +369,7 @@ bool RH_MRF89::available()
     return _rxBufValid; // Will be set by the interrupt handler when a good message is received
 }
 
-bool RH_MRF89::recv(uint8_t* buf, uint8_t* len)
+bool RH_MRF89::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

@@ -17,7 +17,7 @@ uint8_t RHMesh::_tmpMessage[RH_ROUTER_MAX_MESSAGE_LEN];
 
 ////////////////////////////////////////////////////////////////////
 // Constructors
-RHMesh::RHMesh(RHGenericDriver& driver, uint8_t thisAddress) 
+RHMesh::RHMesh(RHGenericDriver& driver, uint32_t thisAddress) 
     : RHRouter(driver, thisAddress)
 {
 }
@@ -28,7 +28,7 @@ RHMesh::RHMesh(RHGenericDriver& driver, uint8_t thisAddress)
 ////////////////////////////////////////////////////////////////////
 // Discovers a route to the destination (if necessary), sends and 
 // waits for delivery to the next hop (but not for delivery to the final destination)
-uint8_t RHMesh::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address, uint8_t flags)
+uint8_t RHMesh::sendtoWait(uint8_t* buf, uint8_t len, uint32_t address, uint8_t flags)
 {
     if (len > RH_MESH_MAX_MESSAGE_LEN)
 	return RH_ROUTER_ERROR_INVALID_LENGTH;
@@ -48,15 +48,15 @@ uint8_t RHMesh::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address, uint8_t f
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHMesh::doArp(uint8_t address)
+bool RHMesh::doArp(uint32_t address)
 {
     // Need to discover a route
     // Broadcast a route discovery message with nothing in it
     MeshRouteDiscoveryMessage* p = (MeshRouteDiscoveryMessage*)&_tmpMessage;
     p->header.msgType = RH_MESH_MESSAGE_TYPE_ROUTE_DISCOVERY_REQUEST;
-    p->destlen = 1; 
+    p->destlen = 4; 
     p->dest = address; // Who we are looking for
-    uint8_t error = RHRouter::sendtoWait((uint8_t*)p, sizeof(RHMesh::MeshMessageHeader) + 2, RH_BROADCAST_ADDRESS);
+    uint8_t error = RHRouter::sendtoWait((uint8_t*)p, sizeof(RHMesh::MeshMessageHeader) + 5, RH_BROADCAST_ADDRESS);
     if (error !=  RH_ROUTER_ERROR_NONE)
 	return false;
     
@@ -89,7 +89,7 @@ bool RHMesh::doArp(uint8_t address)
 
 ////////////////////////////////////////////////////////////////////
 // Called by RHRouter::recvfromAck whenever a message goes past
-void RHMesh::peekAtMessage(RoutedMessage* message, uint8_t messageLen)
+void RHMesh::peekAtMessage(RoutedMessage* message, uint16_t messageLen)
 {
     MeshMessageHeader* m = (MeshMessageHeader*)message->data;
     if (   messageLen > 1 
@@ -120,9 +120,9 @@ void RHMesh::peekAtMessage(RoutedMessage* message, uint8_t messageLen)
 
 ////////////////////////////////////////////////////////////////////
 // This is called when a message is to be delivered to the next hop
-uint8_t RHMesh::route(RoutedMessage* message, uint8_t messageLen)
+uint8_t RHMesh::route(RoutedMessage* message, uint16_t messageLen)
 {
-    uint8_t from = headerFrom(); // Might get clobbered during call to superclass route()
+    uint32_t from = headerFrom(); // Might get clobbered during call to superclass route()
     uint8_t ret = RHRouter::route(message, messageLen);
     if (   ret == RH_ROUTER_ERROR_NO_ROUTE
 	|| ret == RH_ROUTER_ERROR_UNABLE_TO_DELIVER)
@@ -148,17 +148,18 @@ uint8_t RHMesh::route(RoutedMessage* message, uint8_t messageLen)
 bool RHMesh::isPhysicalAddress(uint8_t* address, uint8_t addresslen)
 {
     // Can only handle physical addresses 1 octet long, which is the physical node address
-    return addresslen == 1 && address[0] == _thisAddress;
+    return addresslen == 4 && *((uint32_t*)address) == _thisAddress;
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHMesh::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* source, uint8_t* dest, uint8_t* id, uint8_t* flags)
+bool RHMesh::recvfromAck(uint8_t* buf, uint16_t* len, uint32_t* source, uint32_t* dest, uint8_t* id, uint8_t* flags)
 {     
     uint8_t tmpMessageLen = sizeof(_tmpMessage);
-    uint8_t _source;
-    uint8_t _dest;
+    uint32_t _source;
+    uint32_t _dest;
     uint8_t _id;
     uint8_t _flags;
+
     if (RHRouter::recvfromAck(_tmpMessage, &tmpMessageLen, &_source, &_dest, &_id, &_flags))
     {
 	MeshMessageHeader* p = (MeshMessageHeader*)&_tmpMessage;
@@ -190,7 +191,7 @@ bool RHMesh::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* source, uint8_t* d
 	    if (_source == _thisAddress)
 		return false;
 	    
-	    uint8_t numRoutes = tmpMessageLen - sizeof(MeshMessageHeader) - 2;
+	    uint8_t numRoutes = (uint8_t)((tmpMessageLen - sizeof(MeshMessageHeader) - 5)/4);
 	    uint8_t i;
 	    // Are we already mentioned?
 	    for (i = 0; i < numRoutes; i++)
@@ -208,7 +209,7 @@ bool RHMesh::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* source, uint8_t* d
 		    addRouteTo(d->route[i], headerFrom());
             }
 
-	    if (isPhysicalAddress(&d->dest, d->destlen))
+	    if (isPhysicalAddress((uint8_t*)&d->dest, d->destlen))
 	    {
 		// This route discovery is for us. Unicast the whole route back to the originator
 		// as a RH_MESH_MESSAGE_TYPE_ROUTE_DISCOVERY_RESPONSE
@@ -231,7 +232,7 @@ bool RHMesh::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* source, uint8_t* d
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHMesh::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHMesh::recvfromAckTimeout(uint8_t* buf, uint16_t* len, uint16_t timeout, uint32_t* from, uint32_t* to, uint8_t* id, uint8_t* flags)
 {  
     unsigned long starttime = millis();
     int32_t timeLeft;

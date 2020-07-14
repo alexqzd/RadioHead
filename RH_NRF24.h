@@ -591,7 +591,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    bool        recv(uint8_t* buf, uint8_t* len);
+    bool        recv(uint8_t* buf, uint16_t* len);
 
     /// The maximum message length supported by this driver
     /// \return The maximum message length supported by this driver

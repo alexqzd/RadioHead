@@ -290,7 +290,7 @@ bool RH_RF24::available()
     return _rxBufValid;
 }
 
-bool RH_RF24::recv(uint8_t* buf, uint8_t* len)
+bool RH_RF24::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

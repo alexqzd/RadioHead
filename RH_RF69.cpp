@@ -237,14 +237,14 @@ void RH_RF69::readFifo()
     if (payloadlen <= RH_RF69_MAX_ENCRYPTABLE_PAYLOAD_LEN &&
 	payloadlen >= RH_RF69_HEADER_LEN)
     {
-	_rxHeaderTo = _spi.transfer(0);
+    _rxHeaderTo = (_spi.transfer(0) << 24) | (_spi.transfer(0) << 16) | ( _spi.transfer(0) << 8 ) | (_spi.transfer(0));
 	// Check addressing
 	if (_promiscuous ||
 	    _rxHeaderTo == _thisAddress ||
 	    _rxHeaderTo == RH_BROADCAST_ADDRESS)
 	{
 	    // Get the rest of the headers
-	    _rxHeaderFrom  = _spi.transfer(0);
+	    _rxHeaderFrom  = (_spi.transfer(0) << 24) | (_spi.transfer(0) << 16) | ( _spi.transfer(0) << 8 ) | (_spi.transfer(0));
 	    _rxHeaderId    = _spi.transfer(0);
 	    _rxHeaderFlags = _spi.transfer(0);
 	    // And now the real payload
@@ -492,10 +492,11 @@ bool RH_RF69::available()
     return _rxBufValid;
 }
 
-bool RH_RF69::recv(uint8_t* buf, uint8_t* len)
+bool RH_RF69::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;
+			
 
     if (buf && len)
     {
@@ -526,8 +527,16 @@ bool RH_RF69::send(const uint8_t* data, uint8_t len)
     _spi.transfer(RH_RF69_REG_00_FIFO | RH_RF69_SPI_WRITE_MASK); // Send the start address with the write mask on
     _spi.transfer(len + RH_RF69_HEADER_LEN); // Include length of headers
     // First the 4 headers
-    _spi.transfer(_txHeaderTo);
-    _spi.transfer(_txHeaderFrom);
+    _spi.transfer((_txHeaderTo >> 24)  & 0xFF);
+    _spi.transfer((_txHeaderTo >> 16)  & 0xFF);
+    _spi.transfer((_txHeaderTo >> 8)  & 0xFF);
+    _spi.transfer((_txHeaderTo >> 0)  & 0xFF);
+
+    _spi.transfer((_txHeaderFrom >> 24)  & 0xFF);
+    _spi.transfer((_txHeaderFrom >> 16)  & 0xFF);
+    _spi.transfer((_txHeaderFrom >> 8)  & 0xFF);
+    _spi.transfer((_txHeaderFrom >> 0)  & 0xFF);
+
     _spi.transfer(_txHeaderId);
     _spi.transfer(_txHeaderFlags);
     // Now the payload

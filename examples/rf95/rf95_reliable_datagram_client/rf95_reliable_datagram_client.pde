@@ -64,7 +64,7 @@ void loop()
   {
     // Now wait for a reply from the server
     uint8_t len = sizeof(buf);
-    uint8_t from;   
+    uint32_t from;   
     if (manager.recvfromAckTimeout(buf, &len, 2000, &from))
     {
       Serial.print("got reply from : 0x");

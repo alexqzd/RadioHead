@@ -237,7 +237,7 @@ bool RH_TCP::waitAvailableTimeout(uint16_t timeout)
     return result > 0;
 }
 
-bool RH_TCP::recv(uint8_t* buf, uint8_t* len)
+bool RH_TCP::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;
@@ -267,13 +267,13 @@ uint8_t RH_TCP::maxMessageLength()
     return RH_TCP_MAX_MESSAGE_LEN;
 }
 
-void RH_TCP::setThisAddress(uint8_t address)
+void RH_TCP::setThisAddress(uint32_t address)
 {
     RHGenericDriver::setThisAddress(address);
     sendThisAddress(_thisAddress);
 }
 
-bool RH_TCP::sendThisAddress(uint8_t thisAddress)
+bool RH_TCP::sendThisAddress(uint32_t thisAddress)
 {
     if (_socket < 0)
 	return false;

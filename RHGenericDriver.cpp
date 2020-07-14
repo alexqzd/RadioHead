@@ -105,17 +105,17 @@ void RHGenericDriver::setPromiscuous(bool promiscuous)
     _promiscuous = promiscuous;
 }
 
-void RHGenericDriver::setThisAddress(uint8_t address)
+void RHGenericDriver::setThisAddress(uint32_t address)
 {
     _thisAddress = address;
 }
 
-void RHGenericDriver::setHeaderTo(uint8_t to)
+void RHGenericDriver::setHeaderTo(uint32_t to)
 {
     _txHeaderTo = to;
 }
 
-void RHGenericDriver::setHeaderFrom(uint8_t from)
+void RHGenericDriver::setHeaderFrom(uint32_t from)
 {
     _txHeaderFrom = from;
 }
@@ -131,12 +131,12 @@ void RHGenericDriver::setHeaderFlags(uint8_t set, uint8_t clear)
     _txHeaderFlags |= set;
 }
 
-uint8_t RHGenericDriver::headerTo()
+uint32_t RHGenericDriver::headerTo()
 {
     return _rxHeaderTo;
 }
 
-uint8_t RHGenericDriver::headerFrom()
+uint32_t RHGenericDriver::headerFrom()
 {
     return _rxHeaderFrom;
 }

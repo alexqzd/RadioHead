@@ -107,7 +107,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    virtual bool recv(uint8_t* buf, uint8_t* len);
+    virtual bool recv(uint8_t* buf, uint16_t* len);
 
     /// Waits until any previous transmit packet is finished being transmitted with waitPacketSent().
     /// Then loads a message into the transmitter and starts the transmitter. Note that a message length
@@ -132,7 +132,7 @@ public:
     /// You would normally set the header FROM address to be the same as thisAddress (though you dont have to, 
     /// allowing the possibilty of address spoofing).
     /// \param[in] address The address of this node.
-    void setThisAddress(uint8_t address);
+    void setThisAddress(uint32_t address);
 
 protected:
 
@@ -151,7 +151,7 @@ private:
     /// in a RHTcpThisAddress message.
     /// \param[in] thisAddress The node address of this node
     /// \return true if successful
-    bool sendThisAddress(uint8_t thisAddress);
+    bool sendThisAddress(uint32_t thisAddress);
 
     /// Sends a message to the ether simulator server for delivery to
     /// other nodes

@@ -186,7 +186,7 @@ void RH_Serial::validateRxBuf()
     }
 }
 
-bool RH_Serial::recv(uint8_t* buf, uint8_t* len)
+bool RH_Serial::recv(uint8_t* buf, uint16_t* len)
 {
     if (!available())
 	return false;

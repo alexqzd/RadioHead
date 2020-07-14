@@ -74,7 +74,7 @@ int main (int argc, const char* argv[] )
   while (true)
   {
     uint8_t len = sizeof(buf);
-    uint8_t from, to, id, flags;
+    uint32_t from, to, id, flags;
 
     /* Begin Driver Only code
     if (nrf24.available())
@@ -100,7 +100,7 @@ int main (int argc, const char* argv[] )
     {
       // Wait for a message addressed to us from the client
       uint8_t len = sizeof(buf);
-      uint8_t from;
+      uint32_t from;
       if (manager.recvfromAck(buf, &len, &from))
       {
         Serial.print("got request from : 0x");

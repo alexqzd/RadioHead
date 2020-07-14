@@ -84,7 +84,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    virtual bool recv(uint8_t* buf, uint8_t* len) = 0;
+    virtual bool recv(uint8_t* buf, uint16_t* len) = 0;
 
     /// Waits until any previous transmit packet is finished being transmitted with waitPacketSent().
     /// Then optionally waits for Channel Activity Detection (CAD) 
@@ -161,15 +161,15 @@ public:
     /// You would normally set the header FROM address to be the same as thisAddress (though you dont have to, 
     /// allowing the possibilty of address spoofing).
     /// \param[in] thisAddress The address of this node.
-    virtual void setThisAddress(uint8_t thisAddress);
+    virtual void setThisAddress(uint32_t thisAddress);
 
     /// Sets the TO header to be sent in all subsequent messages
     /// \param[in] to The new TO header value
-    virtual void           setHeaderTo(uint8_t to);
+    virtual void           setHeaderTo(uint32_t to);
 
     /// Sets the FROM header to be sent in all subsequent messages
     /// \param[in] from The new FROM header value
-    virtual void           setHeaderFrom(uint8_t from);
+    virtual void           setHeaderFrom(uint32_t from);
 
     /// Sets the ID header to be sent in all subsequent messages
     /// \param[in] id The new ID header value
@@ -191,11 +191,11 @@ public:
 
     /// Returns the TO header of the last received message
     /// \return The TO header
-    virtual uint8_t        headerTo();
+    virtual uint32_t        headerTo();
 
     /// Returns the FROM header of the last received message
     /// \return The FROM header
-    virtual uint8_t        headerFrom();
+    virtual uint32_t        headerFrom();
 
     /// Returns the ID header of the last received message
     /// \return The ID header
@@ -256,16 +256,16 @@ protected:
     volatile RHMode     _mode;
 
     /// This node id
-    uint8_t             _thisAddress;
+    uint32_t             _thisAddress;
     
     /// Whether the transport is in promiscuous mode
     bool                _promiscuous;
 
     /// TO header in the last received mesasge
-    volatile uint8_t    _rxHeaderTo;
+    volatile uint32_t    _rxHeaderTo;
 
     /// FROM header in the last received mesasge
-    volatile uint8_t    _rxHeaderFrom;
+    volatile uint32_t    _rxHeaderFrom;
 
     /// ID header in the last received mesasge
     volatile uint8_t    _rxHeaderId;
@@ -274,10 +274,10 @@ protected:
     volatile uint8_t    _rxHeaderFlags;
 
     /// TO header to send in all messages
-    uint8_t             _txHeaderTo;
+    uint32_t             _txHeaderTo;
 
     /// FROM header to send in all messages
-    uint8_t             _txHeaderFrom;
+    uint32_t             _txHeaderFrom;
 
     /// ID header to send in all messages
     uint8_t             _txHeaderId;

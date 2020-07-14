@@ -243,7 +243,7 @@ public:
     /// \param[in] buf Location to copy the received message
     /// \param[in,out] len Pointer to available space in buf. Set to the actual number of octets copied.
     /// \return true if a valid message was copied to buf
-    bool        recv(uint8_t* buf, uint8_t* len);
+    bool        recv(uint8_t* buf, uint16_t* len);
 
     /// Enables AES encryption and sets the AES encryption key, used
     /// to encrypt and decrypt all messages using the on-chip AES CCM mode encryption engine. 
