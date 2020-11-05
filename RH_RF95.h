@@ -27,11 +27,11 @@
 
 // The length of the headers we add.
 // The headers are inside the LORA's payload
-#define RH_RF95_HEADER_LEN 4
+#define RH_RF95_HEADER_LEN 10
 
 // This is the maximum message length that can be supported by this driver. 
 // Can be pre-defined to a smaller size (to save SRAM) prior to including this header
-// Here we allow for 1 byte message length, 4 bytes headers, user data and 2 bytes of FCS
+// Here we allow for 1 byte message length, 10 bytes headers, user data and 2 bytes of FCS
 #ifndef RH_RF95_MAX_MESSAGE_LEN
  #define RH_RF95_MAX_MESSAGE_LEN (RH_RF95_MAX_PAYLOAD_LEN - RH_RF95_HEADER_LEN)
 #endif
@@ -315,7 +315,7 @@
 /// - LoRa mode:
 /// - 8 symbol PREAMBLE
 /// - Explicit header with header CRC (default CCITT, handled internally by the radio)
-/// - 4 octets HEADER: (TO, FROM, ID, FLAGS)
+/// - 10 octets HEADER: (TO, FROM, ID, FLAGS)
 /// - 0 to 251 octets DATA 
 /// - CRC (default CCITT, handled internally by the radio)
 ///
