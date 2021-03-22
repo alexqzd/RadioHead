@@ -127,13 +127,11 @@ bool RH_RF95::init()
     return true;
 }
 
-// C++ level interrupt handler for this instance
-// LORA is unusual in that it has several interrupt lines, and not a single, combined one.
-// On MiniWirelessLoRa, only one of the several interrupt lines (DI0) from the RFM95 is usefuly
-// connnected to the processor.
-// We use this to get RxDone and TxDone interrupts
-void RH_RF95::handleInterrupt()
+void RH_RF95::checkInterrupts()
 {
+    if (!interruptFlag)
+        return;
+
     // we need the RF95 IRQ to be level triggered, or we ……have slim chance of missing events
     // https://github.com/geeksville/Meshtastic-esp32/commit/78470ed3f59f5c84fbd1325bcff1fd95b2b20183
 
@@ -227,6 +225,18 @@ void RH_RF95::handleInterrupt()
     // clear the radio's interrupt flag. So we do it twice. Why?
     //    spiWrite(RH_RF95_REG_12_IRQ_FLAGS, 0xff); // Clear all IRQ flags
     //    spiWrite(RH_RF95_REG_12_IRQ_FLAGS, 0xff); // Clear all IRQ flags
+
+    interruptFlag = false;
+}
+
+// C++ level interrupt handler for this instance
+// LORA is unusual in that it has several interrupt lines, and not a single, combined one.
+// On MiniWirelessLoRa, only one of the several interrupt lines (DI0) from the RFM95 is usefuly
+// connnected to the processor.
+// We use this to get RxDone and TxDone interrupts
+void RH_RF95::handleInterrupt()
+{
+    interruptFlag = true;
 }
 
 // These are low level functions that call the interrupt handler for the correct

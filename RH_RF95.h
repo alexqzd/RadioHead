@@ -840,12 +840,16 @@ public:
     /// false noise packets.
     /// \param[in] on bool, true enables CRCs in incoming and outgoing packets, false disables them
     void setPayloadCRC(bool on);
+
+    void           checkInterrupts();
  	
 protected:
     /// This is a low level function to handle the interrupts for one instance of RH_RF95.
     /// Called automatically by isr*()
     /// Should not need to be called by user code.
     void           handleInterrupt();
+
+    bool interruptFlag = false;
 
     /// Examine the revceive buffer to determine whether the message is for this node
     void validateRxBuf();
